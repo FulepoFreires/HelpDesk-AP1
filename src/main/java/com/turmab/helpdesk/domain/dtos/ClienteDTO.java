@@ -1,55 +1,129 @@
 package com.turmab.helpdesk.domain.dtos;
 
-import java.io.Serializable;
-import java.util.Set;
-import java.util.stream.Collectors;
-
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.turmab.helpdesk.domain.Cliente;
 import com.turmab.helpdesk.domain.enums.Perfil;
 
+import javax.validation.constraints.NotNull;
+import java.io.Serializable;
+import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+/**
+ * DTO para transferir dados da entidade Cliente.
+ * Inclui validações e formatação de dados para a comunicação com o front-end.
+ *
+ * @author Seu Nome
+ * @version 1.0
+ * @since 2025-10-04
+ */
 public class ClienteDTO implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private Integer id;
-    private String nome;
-    private String cpf;
-    private String email;
-    private Set<Integer> perfis;  // Guardando os códigos dos perfis
-    private String dataCriacao;   // Se houver esse campo em Pessoa
+    protected Integer id;
 
-    // Construtor padrão
+    @NotNull(message = "O campo NOME é requerido")
+    protected String nome;
+
+    @NotNull(message = "O campo CPF é requerido")
+    protected String cpf;
+
+    @NotNull(message = "O campo EMAIL é requerido")
+    protected String email;
+
+    @NotNull(message = "O campo SENHA é requerido")
+    protected String senha;
+
+    protected Set<Integer> perfis = new HashSet<>();
+
+    @JsonFormat(pattern = "dd/MM/yyyy")
+    protected LocalDate dataCriacao = LocalDate.now();
+
+    /**
+     * Construtor padrão.
+     * Adiciona o perfil de CLIENTE por padrão a qualquer nova instância.
+     */
     public ClienteDTO() {
         super();
+        addPerfil(Perfil.CLIENTE);
     }
 
-    // Construtor recebendo a entidade Cliente
+    /**
+     * Construtor que converte uma entidade Cliente em um ClienteDTO.
+     * @param obj A entidade Cliente a ser convertida.
+     */
     public ClienteDTO(Cliente obj) {
+        super();
         this.id = obj.getId();
         this.nome = obj.getNome();
         this.cpf = obj.getCpf();
         this.email = obj.getEmail();
-        this.perfis = obj.getPerfis().stream()
-                         .map(Perfil::getCodigo)
-                         .collect(Collectors.toSet());
-        this.dataCriacao = (obj.getDataCriacao() != null) ? obj.getDataCriacao().toString() : null;
+        this.senha = obj.getSenha();
+        this.perfis = obj.getPerfis().stream().map(Perfil::getCodigo).collect(Collectors.toSet());
+        this.dataCriacao = obj.getDataCriacao();
     }
 
-    // Getters e Setters
-    public Integer getId() { return id; }
-    public void setId(Integer id) { this.id = id; }
+    // GETTERS E SETTERS
 
-    public String getNome() { return nome; }
-    public void setNome(String nome) { this.nome = nome; }
+    public Integer getId() {
+        return id;
+    }
 
-    public String getCpf() { return cpf; }
-    public void setCpf(String cpf) { this.cpf = cpf; }
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
+    public String getNome() {
+        return nome;
+    }
 
-    public Set<Integer> getPerfis() { return perfis; }
-    public void setPerfis(Set<Integer> perfis) { this.perfis = perfis; }
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
 
-    public String getDataCriacao() { return dataCriacao; }
-    public void setDataCriacao(String dataCriacao) { this.dataCriacao = dataCriacao; }
+    public String getCpf() {
+        return cpf;
+    }
+
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getSenha() {
+        return senha;
+    }
+
+    public void setSenha(String senha) {
+        this.senha = senha;
+    }
+
+    public Set<Integer> getPerfis() {
+        return perfis;
+    }
+
+    public void setPerfis(Set<Integer> perfis) {
+        this.perfis = perfis;
+    }
+
+    public void addPerfil(Perfil perfil) {
+        this.perfis.add(perfil.getCodigo());
+    }
+
+    public LocalDate getDataCriacao() {
+        return dataCriacao;
+    }
+
+    public void setDataCriacao(LocalDate dataCriacao) {
+        this.dataCriacao = dataCriacao;
+    }
 }
